@@ -12,6 +12,11 @@ function App() {
           value: "슈퍼맨",
           label: "슈퍼맨",
           children: [{ value: "주인공", label: "주인공" }]
+        },
+        {
+          value: "멍뭉이",
+          label: "멍뭉이",
+          children: [{ value: "아기", label: "아기" }]
         }
       ]
     }

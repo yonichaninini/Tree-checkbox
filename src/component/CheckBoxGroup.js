@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import NodeTreeModel from "./Model/NodeTreeModel";
 
@@ -11,18 +11,20 @@ const CheckBoxGroup = ({ nodes, className, checkList }) => {
   const model = new NodeTreeModel();
   model.flattenNodes(nodes);
   useEffect(() => {
+    console.log("onChange", checkReference);
     const childrenNodes = [];
     const checktreeNode = nodes => {
-      nodes.map(n => {
+      nodes.forEach(n => {
         const flatNode = model.getNode(n.value);
         if (flatNode.hasChildrenNode) {
           checktreeNode(n.children);
           childrenNodes.push(n);
         }
       });
-      childrenNodes.map(n => {
-        if (n.children.some(child => !checkList.includes(child))) {
-          if (n.children.some(child => checkList.includes(child))) {
+      childrenNodes.forEach(n => {
+        if (n.children.some(child => !checkReference.includes(child.value))) {
+          if (n.children.some(child => checkReference.includes(child.value))) {
+            console.log("indeterminate");
             if (checkReference.includes(n.value)) {
               setCheckReference(
                 checkReference.filter(
@@ -36,6 +38,7 @@ const CheckBoxGroup = ({ nodes, className, checkList }) => {
 
             //return "indeterminate";
           } else {
+            console.log("false");
             if (checkReference.includes(n.value)) {
               setCheckReference(
                 checkReference.filter(
@@ -45,7 +48,7 @@ const CheckBoxGroup = ({ nodes, className, checkList }) => {
             }
             if (indeterminateList.includes(n.value)) {
               setIndeterminateList(
-                setIndeterminateList.filter(
+                indeterminateList.filter(
                   indeterminateList => indeterminateList !== n.value
                 )
               );
@@ -53,9 +56,10 @@ const CheckBoxGroup = ({ nodes, className, checkList }) => {
             //return false;
           }
         } else {
+          console.log("true");
           if (indeterminateList.includes(n.value)) {
             setIndeterminateList(
-              setIndeterminateList.filter(
+              indeterminateList.filter(
                 indeterminateList => indeterminateList !== n.value
               )
             );
@@ -69,7 +73,6 @@ const CheckBoxGroup = ({ nodes, className, checkList }) => {
         }
       });
     };
-    console.log(childrenNodes);
     checktreeNode(nodes);
   });
   const treeNode = nodes => {
@@ -79,23 +82,28 @@ const CheckBoxGroup = ({ nodes, className, checkList }) => {
       const children = flatNode.hasChildrenNode
         ? treeNode(node.children)
         : null;
-      const onChange = () => {
-        checkReference.includes(node.value)
-          ? setCheckReference(
-              checkReference.filter(
-                checkReference => checkReference !== node.value
+      const onChange = (check, currentNode) => {
+        if (currentNode.children) {
+          currentNode.children.forEach(child => {
+            onChange(checkReference.includes(node.value), child);
+          });
+        } else {
+          console.log(currentNode.value, check);
+          check
+            ? setCheckReference(prev =>
+                prev.filter(
+                  checkReference => checkReference !== currentNode.value
+                )
               )
-            )
-          : setCheckReference(checkReference.concat(node.value));
-
-        console.log(checkReference);
+            : setCheckReference(prev => prev.concat(currentNode.value));
+        }
       };
       return (
         <li key={key} className={className}>
           <label>{node.label}</label>
           <input
             type="checkbox"
-            onChange={onChange}
+            onChange={() => onChange(checkReference.includes(node.value), node)}
             checked={checkReference.includes(node.value)}
           />
           {children}
