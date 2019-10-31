@@ -23,33 +23,48 @@ const CheckBoxGroup = ({ nodes, className, checkList }) => {
       childrenNodes.map(n => {
         if (n.children.some(child => !checkList.includes(child))) {
           if (n.children.some(child => checkList.includes(child))) {
-            setCheckReference(
-              checkReference.filter(
-                checkReference => checkReference !== n.value
-              )
-            );
-            setIndeterminateList(indeterminateList.concat(n.value));
+            if (checkReference.includes(n.value)) {
+              setCheckReference(
+                checkReference.filter(
+                  checkReference => checkReference !== n.value
+                )
+              );
+            }
+            if (!indeterminateList.includes(n.value)) {
+              setIndeterminateList(indeterminateList.concat(n.value));
+            }
+
             //return "indeterminate";
           } else {
-            setCheckReference(
-              checkReference.filter(
-                checkReference => checkReference !== n.value
-              )
-            );
-            setIndeterminateList(
-              indeterminateList.filter(
-                indeterminateList => indeterminateList !== n.value
-              )
-            );
+            if (checkReference.includes(n.value)) {
+              setCheckReference(
+                checkReference.filter(
+                  checkReference => checkReference !== n.value
+                )
+              );
+            }
+            if (indeterminateList.includes(n.value)) {
+              setIndeterminateList(
+                setIndeterminateList.filter(
+                  indeterminateList => indeterminateList !== n.value
+                )
+              );
+            }
             //return false;
           }
         } else {
-          setIndeterminateList(
-            setIndeterminateList.filter(
-              indeterminateList => indeterminateList !== n.value
-            )
-          );
-          setCheckReference(checkReference.concat(n.value));
+          if (indeterminateList.includes(n.value)) {
+            setIndeterminateList(
+              setIndeterminateList.filter(
+                indeterminateList => indeterminateList !== n.value
+              )
+            );
+          }
+
+          if (!checkReference.includes(n.value)) {
+            setCheckReference(checkReference.concat(n.value));
+          }
+
           //return true;
         }
       });
