@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import NodeTreeModel from "./Model/NodeTreeModel";
 
 import "./CheckBoxGroup.scss";
 
-const CheckBoxGroup = ({ nodes, className }) => {
+const CheckBoxGroup = ({ nodes, className, checkList }) => {
+  const [checkReference, setCheckReference] = useState(checkList);
   const model = new NodeTreeModel();
   model.flattenNodes(nodes);
   const treeNode = nodes => {
@@ -14,23 +15,37 @@ const CheckBoxGroup = ({ nodes, className }) => {
       const children = flatNode.hasChildrenNode
         ? treeNode(node.children)
         : null;
+      const onChange = e => {
+        checkReference.includes(node.value)
+          ? setCheckReference(
+              checkReference.filter(
+                checkReference => checkReference !== node.value
+              )
+            )
+          : checkReference.push(node.value);
+        console.log(checkReference);
+      };
       return (
         <li key={key} className={className}>
           <label>{node.label}</label>
-          <input type="checkbox" />
+          <input
+            type="checkbox"
+            onChange={onChange}
+            checked={checkReference.includes(node.value)}
+          />
           {children}
         </li>
       );
     });
     return <ul>{mapNodes}</ul>;
   };
-  const treeNodes = treeNode(nodes);
-  return <div>{treeNodes}</div>;
+  return <div>{treeNode(nodes)}</div>;
 };
 
 const nodePropTypes = {
   label: PropTypes.node.isRequired,
-  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  chekedList: PropTypes.array
 };
 const nodePropTypesChildren = PropTypes.oneOfType([
   PropTypes.shape(nodePropTypes),
@@ -46,6 +61,7 @@ CheckBoxGroup.propTypes = {
   onChecked: PropTypes.func
 };
 CheckBoxGroup.defaultProps = {
-  node: [{}]
+  node: [{}],
+  chekedList: []
 };
 export default CheckBoxGroup;

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import CheckBoxGroup from "./component/CheckBoxGroup";
 function App() {
+  const [checkList, setCheckList] = useState([]);
   const nodes = [
     {
       value: "file",
@@ -17,7 +18,7 @@ function App() {
   ];
   return (
     <div className="App">
-      <CheckBoxGroup nodes={nodes} />
+      <CheckBoxGroup nodes={nodes} checkList={checkList} />
     </div>
   );
 }

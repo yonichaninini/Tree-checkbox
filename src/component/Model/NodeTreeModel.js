@@ -15,6 +15,9 @@ class NodeTreeModel {
     nodes.forEach(node => {
       const hasChildrenNode = this.hasChildren(node);
       this.nodeModelNodes[node.value] = {
+        label: node.label,
+        value: node.value,
+        children: node.children,
         hasChildrenNode
       };
       this.flattenNodes(node.children);
@@ -23,5 +26,12 @@ class NodeTreeModel {
   getNode(value) {
     return this.nodeModelNodes[value];
   }
+
+  /*checkListAdministrate(checkList) {
+    Object.keys(this.nodeModelNodes).forEach(value => {
+      const hasList = checkList.includes(value);
+      return hasList;
+    });*/
 }
+
 export default NodeTreeModel;
