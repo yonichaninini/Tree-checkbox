@@ -5,12 +5,58 @@ import NodeTreeModel from "./Model/NodeTreeModel";
 import "./CheckBoxGroup.scss";
 
 const CheckBoxGroup = ({ nodes, className, checkList }) => {
+  const [checkReference, setCheckReference] = useState(checkList);
+  const [indeterminateList, setIndeterminateList] = useState([]);
+
   const model = new NodeTreeModel();
   model.flattenNodes(nodes);
-
-  useEffect(() => {});
-
-  const [checkReference, setCheckReference] = useState(checkList);
+  useEffect(() => {
+    const childrenNodes = [];
+    const checktreeNode = nodes => {
+      nodes.map(n => {
+        const flatNode = model.getNode(n.value);
+        if (flatNode.hasChildrenNode) {
+          checktreeNode(n.children);
+          childrenNodes.push(n);
+        }
+      });
+      childrenNodes.map(n => {
+        if (n.children.some(child => !checkList.includes(child))) {
+          if (n.children.some(child => checkList.includes(child))) {
+            setCheckReference(
+              checkReference.filter(
+                checkReference => checkReference !== n.value
+              )
+            );
+            setIndeterminateList(indeterminateList.concat(n.value));
+            //return "indeterminate";
+          } else {
+            setCheckReference(
+              checkReference.filter(
+                checkReference => checkReference !== n.value
+              )
+            );
+            setIndeterminateList(
+              indeterminateList.filter(
+                indeterminateList => indeterminateList !== n.value
+              )
+            );
+            //return false;
+          }
+        } else {
+          setIndeterminateList(
+            setIndeterminateList.filter(
+              indeterminateList => indeterminateList !== n.value
+            )
+          );
+          setCheckReference(checkReference.concat(n.value));
+          //return true;
+        }
+      });
+    };
+    console.log(childrenNodes);
+    checktreeNode(nodes);
+  });
   const treeNode = nodes => {
     const mapNodes = nodes.map(node => {
       const flatNode = model.getNode(node.value);
