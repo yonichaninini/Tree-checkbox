@@ -11,7 +11,6 @@ const CheckBoxGroup = ({ nodes, className, checkList }) => {
   const model = new NodeTreeModel();
   model.flattenNodes(nodes);
   useEffect(() => {
-    console.log("onChange", checkReference);
     const childrenNodes = [];
     const checktreeNode = nodes => {
       nodes.forEach(n => {
@@ -24,7 +23,6 @@ const CheckBoxGroup = ({ nodes, className, checkList }) => {
       childrenNodes.forEach(n => {
         if (n.children.some(child => !checkReference.includes(child.value))) {
           if (n.children.some(child => checkReference.includes(child.value))) {
-            console.log("indeterminate");
             if (checkReference.includes(n.value)) {
               setCheckReference(
                 checkReference.filter(
@@ -38,7 +36,6 @@ const CheckBoxGroup = ({ nodes, className, checkList }) => {
 
             //return "indeterminate";
           } else {
-            console.log("false");
             if (checkReference.includes(n.value)) {
               setCheckReference(
                 checkReference.filter(
@@ -56,7 +53,6 @@ const CheckBoxGroup = ({ nodes, className, checkList }) => {
             //return false;
           }
         } else {
-          console.log("true");
           if (indeterminateList.includes(n.value)) {
             setIndeterminateList(
               indeterminateList.filter(
@@ -100,6 +96,15 @@ const CheckBoxGroup = ({ nodes, className, checkList }) => {
       };
       return (
         <li key={key} className={className}>
+          {indeterminateList.includes(node.value) && (
+            <div
+              style={{
+                width: 5,
+                height: 5,
+                background: "red"
+              }}
+            />
+          )}
           <label>{node.label}</label>
           <input
             type="checkbox"

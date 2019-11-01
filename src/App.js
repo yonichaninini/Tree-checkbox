@@ -16,7 +16,11 @@ function App() {
         {
           value: "멍뭉이",
           label: "멍뭉이",
-          children: [{ value: "아기", label: "아기" }]
+          children: [
+            { value: "아기", label: "아기" },
+            { value: "아기2", label: "아기2" },
+            { value: "아기3", label: "아기3" }
+          ]
         }
       ]
     }
